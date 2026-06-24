@@ -1,3 +1,5 @@
+import sys
+
 class BankAccount:
     def __init__(self, name, balance =0.0):
         self.name = name
@@ -28,18 +30,56 @@ class BankAccount:
         name,balance_str = data_string.split("-") 
         return cls(name, float(balance_str))         
 
-# Creating a standard account
-acct1 = BankAccount("Shreya", 1500.0)
-# print(acct1)
+
+
+
+if len(sys.argv)<2:
+    print("❌ Error: Missing inputs.")
+    print("Usage: python bank.py <action> <additional_arguments>")
+    sys.exit()
+
+action = sys.argv[1].lower()
+
+
+if action == "create":
+    if len(sys.argv)<3 : 
+        print("❌ Error: Please provide data string in format Name-Balance")
+        sys.exit()
+    data_input = sys.argv[2]
+    new_acct = BankAccount.create_from_string(data_input)
+    print("🚀 New Account Created via Factory Method:")
+    print(new_acct)
+
+elif action == "currency":
+    if len(sys.argv) < 2:
+        print("❌ Error: Please provide a currency code (e.g., USD)") 
+        sys.exit()
+    currency_code = sys.argv[2]
+    is_Supported = BankAccount.is_valid_currency(currency_code)
+    if is_Supported:
+        print(f"✅ Yes, {currency_code.upper()} is supported by our bank system.")
+    else:
+        print(f"❌ No, {currency_code.upper()} is NOT supported.")
+
+elif action in ["deposit", "withdraw"]:
+    if len (sys.argv) <3:
+        print("❌ Error: Please specify an amount.")
+        sys.exit()
+
+    # Set up a default account to act on
+    default_acct = BankAccount("Shreya", 1500.0)
+        
+
+    try:
+        amount = float(sys.argv[2])
+    except ValueError:
+        print("❌ Error: Amount must be a clean number (e.g., 500), not words.")
+        sys.exit()
     
-acct1.deposit(500)
-acct1.withdraw(200)
-print(acct1)  # Balance: 1800
-    
-# Creating an account from a string
-acct2 = BankAccount.create_from_string("Rahul-3000")
-print(acct2)
-    
-# Static Method
-print("Is USD supported?", BankAccount.is_valid_currency("USD"))
+    if action == "deposit":
+        default_acct.deposit(amount) 
+    elif action == "withdraw":
+        default_acct.withdraw(amount)
+    else:
+        print(f"❌ Error: Unknown action '{action}'. Use 'deposit' or 'withdraw'.")
 
